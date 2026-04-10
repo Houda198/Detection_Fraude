@@ -55,7 +55,6 @@ python predict.py
 - **Seuils sur mesure** : Recherche par grille (0.05 à 0.95) pour éviter les seuils extrêmes et assurer la stabilité opérationnelle.
 - **Traitement de l'imbalance** : Application de **SMOTE** et ajustement du `scale_pos_weight` pour XGBoost.
 - **Robustesse** : Pipeline entièrement automatisé du nettoyage (`RobustScaler`, Log Transform) jusqu'à l'évaluation finale.
-
 ## 🛡️ Bonnes Pratiques Appliquées
 
 - ✅ SMOTE appliqué uniquement sur le train set (pas de data leakage)
