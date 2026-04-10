@@ -1,0 +1,21 @@
+# Python & Cache
+__pycache__/
+*.py[cod]
+.Python
+
+# Environnement virtuel
+venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+
+# Données et Modèles (Trop lourds pour Git)
+data/
+models/*.joblib
+outputs/*.png
+
+# OS
+.DS_Store
+Thumbs.db
