@@ -57,21 +57,51 @@ class FraudPredictor:
         return "🟢 LOW"
 
 def demo_prediction():
-    """Script de démonstration sur un échantillon aléatoire."""
+    """Script de démonstration grand format avec statistiques."""
     predictor = FraudPredictor()
     df = pd.read_csv(PROCESSED_DATA_FILE)
     
-    # Simulation : On prend 5 transactions au hasard
-    sample = df.sample(5, random_state=42)
-    X_sample = sample.drop(columns=[TARGET_COL])
-    y_sample = sample[TARGET_COL].values
+    # On prend 10 légitimes et 10 fraudes pour avoir un bon mix
+    legit_samples = df[df[TARGET_COL] == 0].sample(10, random_state=42)
+    fraud_samples = df[df[TARGET_COL] == 1].sample(10, random_state=42)
+    
+    # On mélange le tout
+    combined_samples = pd.concat([legit_samples, fraud_samples]).sample(frac=1, random_state=7)
+    
+    X_sample = combined_samples.drop(columns=[TARGET_COL])
+    y_sample = combined_samples[TARGET_COL].values
 
-    print("\n🔍 TESTS INDIVIDUELS :")
-    for i in range(len(sample)):
+    print(f"\n🔍 TEST SUR {len(combined_samples)} TRANSACTIONS MIXTES :")
+    print("-" * 85)
+    print(f"{'Probabilité':<15} | {'Risque':<12} | {'Réalité':<15} | {'Verdict'}")
+    print("-" * 85)
+
+    stats = {"Correct": 0, "Erreur": 0}
+
+    for i in range(len(combined_samples)):
         tx = X_sample.iloc[i].to_dict()
         res = predictor.predict_single(tx)
-        status = "FRAUDE" if y_sample[i] == 1 else "LÉGITIME"
-        print(f"Probabilité: {res['fraud_probability']:.4f} | Risque: {res['risk_level']} | Réalité: {status}")
+        
+        is_fraud_real = y_sample[i] == 1
+        is_fraud_pred = res['fraud_probability'] >= predictor.threshold
+        
+        real_text = "FRAUDE" if is_fraud_real else "LÉGITIME"
+        
+        # On vérifie si le modèle a raison
+        if is_fraud_real == is_fraud_pred:
+            verdict = "✅ OK"
+            stats["Correct"] += 1
+        else:
+            verdict = "❌ ERREUR"
+            stats["Erreur"] += 1
+            
+        print(f"{res['fraud_probability']:.6f}      | "
+              f"{res['risk_level']:<12} | "
+              f"{real_text:<15} | "
+              f"{verdict}")
+
+    print("-" * 85)
+    print(f"BILAN : {stats['Correct']} corrects, {stats['Erreur']} erreurs.")
 
 if __name__ == "__main__":
     demo_prediction()

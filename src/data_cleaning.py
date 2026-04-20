@@ -52,9 +52,8 @@ def scale_features(df: pd.DataFrame) -> pd.DataFrame:
     """Applique RobustScaler."""
     print("\n[CLEAN] === Feature Scaling ===")
     scaler = RobustScaler()
-    cols_to_scale = SCALE_COLS + ["Hour", "Log_Amount"]
-    existing_cols = [c for c in cols_to_scale if c in df.columns]
-    df[existing_cols] = scaler.fit_transform(df[existing_cols])
+    cols_to_scale = ["Time", "Hour", "Log_Amount"]
+    df[cols_to_scale] = scaler.fit_transform(df[cols_to_scale])
     return df
 
 def run_cleaning_pipeline():

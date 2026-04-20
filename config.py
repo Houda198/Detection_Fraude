@@ -3,6 +3,7 @@
 Tous les chemins, hyperparamètres et constantes sont définis ici.
 """
 import os
+import logging
 
 # ============================================================
 # PATHS (Gestion automatique des dossiers)
@@ -25,6 +26,7 @@ for d in [DATA_RAW_DIR, DATA_PROCESSED_DIR, OUTPUTS_DIR, MODELS_DIR]:
 # ============================================================
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
+VAL_SIZE = 0.1
 TARGET_COL = "Class"
 DROP_COLS = []  
 SCALE_COLS = ["Time", "Amount"]
@@ -38,12 +40,6 @@ SMOTE_K_NEIGHBORS = 5
 # ============================================================
 # GRILLES D'HYPERPARAMÈTRES (GridSearchCV)
 # ============================================================
-LR_PARAMS = {
-    "C": [0.01, 0.1, 1, 10],
-    "penalty": ["l2"],
-    "class_weight": ["balanced"],
-    "solver": ["lbfgs"],
-}
 
 RF_PARAMS = {
     "n_estimators": [100], 
@@ -56,7 +52,7 @@ XGB_PARAMS = {
     "n_estimators": [100, 200],      # On teste deux tailles de forêt
     "learning_rate": [0.05, 0.1],    # 0.05 est souvent le "sweet spot"
     "max_depth": [4, 6],             # 6 permet de capturer plus de complexité
-    "scale_pos_weight": [1, 10, 50], # Crucial pour la fraude !
+    "scale_pos_weight": [100, 600], # Crucial pour la fraude !
     "tree_method": ["hist"], 
     "random_state": [RANDOM_STATE]
 }
@@ -65,7 +61,7 @@ XGB_PARAMS = {
 # EVALUATION & OUTPUTS
 # ============================================================
 CV_FOLDS = 5
-SCORING_METRIC = "f1"
+SCORING_METRIC = "average_precision"
 DEFAULT_THRESHOLD = 0.5
 
 OUTPUT_PLOTS = {
@@ -79,3 +75,10 @@ OUTPUT_PLOTS = {
     "threshold_tuning": os.path.join(OUTPUTS_DIR, "09_threshold_tuning.png"),     # Ajouté
     "model_comparison": os.path.join(OUTPUTS_DIR, "10_model_comparison.png"),
 }
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    handlers=[logging.StreamHandler()]
+)
+log = logging.getLogger("FraudDetection")
